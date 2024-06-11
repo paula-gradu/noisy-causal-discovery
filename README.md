@@ -8,6 +8,5 @@ In this repository we show all code for reproducing the experiments in the paper
   2.b. Add the file huber_score.py to the scores folder.
   
   2.c. From the functions.py file add:
-  
-    - to the utils.py file from ges: reachable.
-    - to the main.py file from ges: get_huber_sensitivity, noisy_fit, noisy_forward_step, noisy_backward_step
+  - to the utils.py file from ges: reachable.
+  - to the main.py file from ges: get_huber_sensitivity, noisy_fit, noisy_forward_step, noisy_backward_step
