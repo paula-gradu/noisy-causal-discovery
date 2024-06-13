@@ -331,3 +331,30 @@ def is_valid(data, G, err_lvl, true_G, true_effect=False): # test if projected e
         proj_effect = proj_effect = ols(A_inf, b_inf)[-1]
 
         return ci[1] >= proj_effect >= ci[0]
+    
+def is_valid_empty(data, G, err_lvl, true_G): # test if 0 is in the confidence interval
+    
+    # get our ci
+    n = data.shape[0]
+    G_zero_diag = G.copy()
+    for i in range(G.shape[0]):
+        G_zero_diag[i,i]=0
+    
+    edges = np.argwhere(np.transpose(G_zero_diag) > 0)
+    
+    if(len(edges) == 0): # GES found empty graph so it is "valid" and we stop early
+        return 1
+    edge = edges[np.random.randint(len(edges))]
+    
+    backdoor = [k for k in reachable(edge[1], G) if k in reachable(edge[0], G)] # check if needs backdoor adj
+    
+    if len(backdoor) != 0: # regress on A and its backdoor (adjustment set)
+        A = np.concatenate((data[:, backdoor], data[:, edge[0]].reshape((n,1))), axis=1)
+    else:
+        A = data[:, edge[0]].reshape((n, 1))
+        
+    b = data[:, edge[1]]    
+    
+    ci = (classical_ols_ci(A, b, alpha=err_lvl)[0][-1], classical_ols_ci(A, b, alpha=err_lvl)[1][-1])
+
+    return ci[1] >= 0 >= ci[0]
